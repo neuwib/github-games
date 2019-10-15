@@ -3,10 +3,89 @@
 <head>
   <title>Javascript Tetris</title>
   <style>
+
+    .white {
+      color: white !important;
+    }
+
+    .container-background {
+      background-image: url("../img/shapes.jpg");
+      color: #FFFFFF;
+    }
+
+    .main-block-background {
+      background-image: url("../img/background.jpg");
+    }
+
+    .game-block-background {
+      background-color: #000000;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block 
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+
     body      { font-family: Helvetica, sans-serif; }
-    #tetris   { margin: 1em auto; padding: 1em; border: 4px solid black; border-radius: 10px; background-color: #F8F8F8; }
+    #tetris   { margin: 3em auto; padding: 1em; border: 4px solid black; border-radius: 1px;  }
     #stats    { display: inline-block; vertical-align: top; }
-    #canvas   { display: inline-block; vertical-align: top; background: url(texture.jpg); box-shadow: 10px 10px 10px #999; border: 2px solid #333; }
+    #canvas   { display: inline-block; vertical-align: top; border: 2px solid #333; }
     #menu     { display: inline-block; vertical-align: top; position: relative; }
     #menu p   { margin: 0.5em 0; text-align: center; }
     #menu p a { text-decoration: none; color: black; }
@@ -21,23 +100,30 @@
     @media screen and (min-width: 700px) and (min-height: 700px)  { #tetris { font-size: 1.75em; width: 650px; } #menu { width: 300px; height: 600px; } #upcoming { width: 150px; height: 150px; } #canvas { width: 300px; height: 600px; } } /* 30px chunks */
     @media screen and (min-width: 800px) and (min-height: 800px)  { #tetris { font-size: 2.00em; width: 750px; } #menu { width: 350px; height: 700px; } #upcoming { width: 175px; height: 175px; } #canvas { width: 350px; height: 700px; } } /* 35px chunks */
     @media screen and (min-width: 900px) and (min-height: 900px)  { #tetris { font-size: 2.25em; width: 850px; } #menu { width: 400px; height: 800px; } #upcoming { width: 200px; height: 200px; } #canvas { width: 400px; height: 800px; } } /* 40px chunks */
+
   </style>
 </head>
 
-<body>
-
+<body id="container">
   <div id="tetris">
     <div id="menu">
-      <p id="start"><a href="javascript:play();">Press Space to Play.</a></p>
+      <p id="start"><a id="start-button" href="javascript:play(); preventDefault();">Press Space to Play.</a></p>
       <p><canvas id="upcoming"></canvas></p>
       <p>score <span id="score">00000</span></p>
       <p>rows <span id="rows">0</span></p>
+      <p>
+        <label class="switch">
+          <input type="checkbox" id="toggle-button" onclick="toggle()">
+          <span class="slider round"></span>
+        </label>
+        <br>
+        <span class="toggle-label" id="button-label">Dark Mode</span>
+      </p>
     </div>
     <canvas id="canvas">
       Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
     </canvas>
   </div>
-
   <script src="stats.js"></script>
   <script>
 
@@ -437,11 +523,42 @@
       ctx.strokeRect(x*dx, y*dy, dx, dy)
     }
 
+    function toggle() {
+
+      var container = document.getElementById('container');
+      var mainBlock = document.getElementById('tetris');
+      var gameBlock = document.getElementById('canvas');
+      var startButton = document.getElementById('start-button');
+      var buttonLabel = document.getElementById('button-label');
+
+      container.classList.toggle("container-background");
+      mainBlock.classList.toggle("main-block-background");
+      gameBlock.classList.toggle("game-block-background");
+      startButton.classList.toggle('white');
+
+      var labelValue = document.getElementById("button-label").innerHTML;
+
+      if (labelValue == "Dark Mode") {
+        labelValue = document.getElementById("button-label").innerHTML = "Light Mode";
+      } else {
+        labelValue = document.getElementById("button-label").innerHTML = "Dark Mode";
+      }
+
+    }// end of the toggle function
+
+    document.body.onkeyup = function(e){
+      if (e.keyCode == 32) {
+        preventDefault();
+      }
+    }
+
     //-------------------------------------------------------------------------
     // FINALLY, lets run the game
     //-------------------------------------------------------------------------
 
     run();
+
+
 
   </script>
 
